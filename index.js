@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 let topBooks = [
   {
@@ -15,6 +16,8 @@ let topBooks = [
     author: 'Stephanie Meyer'
   }
 ]
+
+app.use(morgan('common'))
 
 // GET requests
 app.get('/', (req, res) => {
