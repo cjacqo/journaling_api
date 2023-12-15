@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const fs = require('fs')
+const path = require('path')
 
 let topBooks = [
   {
@@ -17,7 +19,8 @@ let topBooks = [
   }
 ]
 
-app.use(morgan('common'))
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
+app.use(morgan('combined', { stream: accessLogStream }))
 
 // GET requests
 app.get('/', (req, res) => {
