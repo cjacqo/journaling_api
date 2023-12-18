@@ -51,9 +51,8 @@ app.get('/', (req, res) => {
  *    Entries: Array
  * }
  */
-app.post('/users', (req, res) => {
-  console.log(req.body)
-  Users.findOne({ UserName: req.body.UserName })
+app.post('/users', async (req, res) => {
+  await Users.findOne({ UserName: req.body.UserName })
     .then((user) => {
       if (user) {
         return res.status(400).send(req.body.UserName + ' already exists')
@@ -77,6 +76,11 @@ app.post('/users', (req, res) => {
       res.status(500).send('Error: ' + err)
     })
 })
+
+/**
+ * GET ALL USERS
+ */
+app.get('/users',)
 
 // list for requests
 app.listen(8080, () => {
