@@ -105,6 +105,37 @@ app.get('/users/:UserName', async (req, res) => {
     })
 })
 
+/**
+ * UPDATE USER INFO BY USERNAME
+ * - Expected JSON Format:
+ * {
+ *    ID: Integer,
+ *    FirstName: String,
+ *    LastName: String,
+ *    UserName: String,
+ *    Password: String,
+ *    Email: String,
+ *    Entries: Array
+ * }
+ */
+app.put('/users/:UserName', async (req, res) => {
+  await Users.findOneAndUpdate({ UserName: req.params.UserName }, { $set:
+    {
+      UserName: req.body.UserName,
+      Password: req.body.Password,
+      Email: req.body.Email
+    }
+  },
+  { new: true }) // This line makes sure that the updated document is returned
+  .then((updatedUser) => {
+    res.json(updatedUser)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.status(500).send('Error: ' + err)
+  })
+})
+
 // list for requests
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080')
