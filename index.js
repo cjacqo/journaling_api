@@ -80,7 +80,16 @@ app.post('/users', async (req, res) => {
 /**
  * GET ALL USERS
  */
-app.get('/users',)
+app.get('/users', async (req, res) => {
+  await Users.find()
+    .then((users) => {
+      res.status(201).json(users)
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+})
 
 // list for requests
 app.listen(8080, () => {
