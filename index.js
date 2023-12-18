@@ -6,7 +6,7 @@ const Models = require('./models.js')
 const fs = require('fs')
 const path = require('path')
 
-
+mongoose.connect('mongodb://localhost:27017/journaling', { useNewUrlParser: true, useUnifiedTopology: true })
 
 // list for requests
 app.listen(8080, () => {
