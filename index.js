@@ -97,7 +97,11 @@ app.get('/users', async (req, res) => {
 app.get('/users/:UserName', async (req, res) => {
   await Users.findOne({ UserName: req.params.UserName })
     .then((user) => {
-      res.json(user)
+      if (!user) {
+        res.status(400).send(req.params.UserName + ' was not found')
+      } else {
+        res.json(user)
+      }
     })
     .catch((err) => {
       console.error(err)
