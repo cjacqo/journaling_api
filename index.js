@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const mongoose = require('mongoose')
+const Models = require('./models.js')
 const fs = require('fs')
 const path = require('path')
 
