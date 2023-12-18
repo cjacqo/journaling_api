@@ -158,6 +158,23 @@ app.delete('/users/:UserName', async (req, res) => {
     })
 })
 
+/**
+ * ADD ENTRY TO A USER'S LIST OF ENTRIES
+ */
+app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
+  await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
+    $push: { Entries: req.params.EntryID }
+  },
+  { new: true })
+  .then((updatedUser) => {
+    res.json(updatedUser)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.status(500).send('Error: ' + err)
+  })
+})
+
 // list for requests
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080')
