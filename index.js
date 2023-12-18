@@ -175,6 +175,20 @@ app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
   })
 })
 
+/**
+ * GET ALL ENTRIES
+ */
+app.get('/entries', async (req, res) => {
+  await Entries.find()
+    .then((entries) => {
+      res.status(201).json(entries)
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+})
+
 // list for requests
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080')
