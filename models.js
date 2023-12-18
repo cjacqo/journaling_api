@@ -17,3 +17,11 @@ let userSchema = mongoose.Schema({
   Email: { type: String, required: true },
   Entries: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Entry' }]
 })
+
+let Entry = mongoose.model('Entry', entrySchema)
+let User = mongoose.model('User', userSchema)
+
+module.exports = {
+  Entry,
+  User
+}
