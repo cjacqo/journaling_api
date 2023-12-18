@@ -136,6 +136,24 @@ app.put('/users/:UserName', async (req, res) => {
   })
 })
 
+/**
+ * DELETE A USER BY USERNAME
+ */
+app.delete('/users/:UserName', async (req, res) => {
+  await Users.findOneAndDelete({ UserName: req.params.UserName })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.UserName + ' was not found')
+      } else {
+        res.status(200).send(req.params.UserName + ' was deleted')
+      }
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+})
+
 // list for requests
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080')
