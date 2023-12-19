@@ -331,26 +331,38 @@ app.post(
   '/entries',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
-    await Entries.findOne({ Title: req.body.Title })
-      .then((entry) => {
-        if (entry) {
-          return res.status(400).send(req.body.Title + ' already exists')
-        } else {
-          Entries.create({
-            Title: req.body.Title,
-            Content: req.body.Content
-          })
-          .then((entry) => { res.status(201).json(entry) })
-          .catch(err => {
-            console.error(err)
-            res.status(500).send('Error: ' + err)
-          })
-        }
+    const { Title, Content } = req.body
+
+    try {
+      // Check to see if an entry with the same title exists
+      const entryExists = await Entries.findOne({ Title: Title })
+      if (entryExists) {
+        return res.status(400).send(Title + ' already exists')
+      }
+      
+      // Get user id
+      const userId = req.user._id
+
+      // Create new entry
+      const newEntry = new Entries({
+        Title,
+        Content,
+        Author: userId
       })
-      .catch(err => {
-        console.error(err)
-        res.status(500).send('Error: ' + err)
+
+      // Save the entry
+      await newEntry.save()
+
+      // Update the user's Entries field with the new entry's ObjectID
+      await Users.findByIdAndUpdate(userId, {
+        $push: { Entries: newEntry._id }
       })
+
+      return res.status(201).json(newEntry)
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    }
 })
 
 /**
