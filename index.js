@@ -3,7 +3,8 @@ const Models = require('./models.js')
 const Entries = Models.Entry
 const Users = Models.User
 
-mongoose.connect('mongodb://127.0.0.1/journaling')
+// mongoose.connect('mongodb://127.0.0.1/journaling')
+mongoose.connect(process.env.CONNECTION_URI)
 
 const express = require('express'),
 app = express(),
