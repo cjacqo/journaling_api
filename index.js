@@ -190,6 +190,32 @@ app.get('/entries', async (req, res) => {
 })
 
 /**
+ * CREATE AN ENTRY
+ */
+app.post('/entries', async (req, res) => {
+  await Entries.findOne({ Title: req.body.Title })
+    .then((entry) => {
+      if (entry) {
+        return res.status(400).send(req.body.Title + ' already exists')
+      } else {
+        Entries.create({
+          Title: req.body.Title,
+          Content: req.body.Content
+        })
+        .then((entry) => { res.status(201).json(entry) })
+        .catch(err => {
+          console.error(err)
+          res.status(500).send('Error: ' + err)
+        })
+      }
+    })
+    .catch(err => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+})
+
+/**
  * UPDATE ENTRY BY TITLE
  */
 app.put('/entries/:Title', async (req, res) => {
