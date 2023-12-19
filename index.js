@@ -366,21 +366,52 @@ app.put('/entries/:Title', async (req, res) => {
 })
 
 /**
- * DELETE ENTRY BY TITLE
+ * @description
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @name DELETE /entries/:Title
  */
-app.delete('/entries/:Title', async (req, res) => {
-  await Entries.findOneAndDelete({ Title: req.params.Title })
-    .then((entry) => {
+app.delete('/entries/:Title',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    // Get title from params
+    const { Title } = req.params
+    
+    try {
+      // Get user id
+      const userId = req.user._id
+
+      // Find entry in Entries collection
+      const entry = await Entries.findOne({ Title: Title })
+
+      // Check if entry exists
       if (!entry) {
-        res.status(400).send(req.params.Title + ' was not found')
-      } else {
-        res.status(200).send(req.params.Title + ' was deleted')
+        return res.status(400).send('Entry with title \'' + Title + '\' was not found')
       }
-    })
-    .catch((err) => {
+
+      // Get entry id
+      const entryId = entry._id
+
+      // Delete from Entries collection
+      await Entries.findByIdAndDelete(entryId)
+
+      // Delete from Users Entries field
+      await Users.findByIdAndUpdate(userId, {
+        $pull: {
+          Entries: entryId
+        }
+      }).then(() => {
+        console.log('Entry deleted successfully from the User document')
+      }).catch((err) => {
+        console.error('Error deleting entry from User document: ' + err)
+      })
+
+      return res.status(200).send(Title + ' was found and deleted')
+      
+    } catch (err) {
       console.error(err)
-      res.status(500).send('Error ' + err)
-    })
+      res.status(400).send('Error: ' + err)
+    }
 })
 
 // list for requests
