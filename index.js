@@ -141,19 +141,22 @@ app.post('/users', async (req, res) => {
  *  "Entries": [ObjectID]
  * }
  */
-app.get('/users/:UserName', async (req, res) => {
-  await Users.findOne({ UserName: req.params.UserName })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send(req.params.UserName + ' was not found')
-      } else {
-        res.json(user)
-      }
-    })
-    .catch((err) => {
-      console.error(err)
-      res.status(500).send('Error: ' + err)
-    })
+app.get(
+  '/users/:UserName',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    await Users.findOne({ UserName: req.params.UserName })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.UserName + ' was not found')
+        } else {
+          res.json(user)
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).send('Error: ' + err)
+      })
 })
 
 /**
@@ -180,39 +183,42 @@ app.get('/users/:UserName', async (req, res) => {
  *  "Entries": [ObjectID]
  * }
  */
-app.put('/users/:UserName', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  // CONDITION TO CHECK USER.USERNAME !== PARAMS.USERNAME
-  if (req.user.UserName !== req.params.UserName) {
-    return res.status(400).send('Permission denied')
-  }
-  try {
-    // Check if the new username already exists in the db
-    const existinguser = await Users.findOne({ UserName: req.body.UserName })
-
-    if (existinguser) {
-      return res.status(400).send(req.body.UserName + ' already exists')
+app.put(
+  '/users/:UserName',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    // CONDITION TO CHECK USER.USERNAME !== PARAMS.USERNAME
+    if (req.user.UserName !== req.params.UserName) {
+      return res.status(400).send('Permission denied')
     }
+    try {
+      // Check if the new username already exists in the db
+      const existinguser = await Users.findOne({ UserName: req.body.UserName })
 
-    await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
-      $set:
-      {
-        UserName: req.body.UserName,
-        Password: req.body.Password,
-        Email: req.body.Email
+      if (existinguser) {
+        return res.status(400).send(req.body.UserName + ' already exists')
       }
-    },
-    { new: true })
-    .then((updatedUser) => {
-      res.json(updatedUser)
-    })
-    .catch((err) => {
+
+      await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
+        $set:
+        {
+          UserName: req.body.UserName,
+          Password: req.body.Password,
+          Email: req.body.Email
+        }
+      },
+      { new: true })
+      .then((updatedUser) => {
+        res.json(updatedUser)
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).send('Error: ' + err)
+      })
+    } catch (err) {
       console.error(err)
       res.status(500).send('Error: ' + err)
-    })
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Error: ' + err)
-  }
+    }
 })
 
 /**
@@ -229,19 +235,22 @@ app.put('/users/:UserName', passport.authenticate('jwt', { session: false }), as
  * Response data format:
  * none
  */
-app.delete('/users/:UserName', async (req, res) => {
-  await Users.findOneAndDelete({ UserName: req.params.UserName })
-    .then((user) => {
-      if (!user) {
-        res.status(400).send(req.params.UserName + ' was not found')
-      } else {
-        res.status(200).send(req.params.UserName + ' was deleted')
-      }
-    })
-    .catch((err) => {
-      console.error(err)
-      res.status(500).send('Error: ' + err)
-    })
+app.delete(
+  '/users/:UserName',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    await Users.findOneAndDelete({ UserName: req.params.UserName })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.UserName + ' was not found')
+        } else {
+          res.status(200).send(req.params.UserName + ' was deleted')
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).send('Error: ' + err)
+      })
 })
 
 /**
@@ -258,24 +267,27 @@ app.delete('/users/:UserName', async (req, res) => {
  * Response data format:
  * none
  */
-app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
-  await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
-    $push: { Entries: req.params.EntryID }
-  },
-  { new: true })
-  .then((updatedUser) => {
-    res.json(updatedUser)
-  })
-  .catch((err) => {
-    console.error(err)
-    res.status(500).send('Error: ' + err)
-  })
+app.post(
+  '/users/:UserName/Entries/:EntryID',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
+      $push: { Entries: req.params.EntryID }
+    },
+    { new: true })
+    .then((updatedUser) => {
+      res.json(updatedUser)
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
 })
 
 /**
  * @description List of Entries
  * @example
- * Authentication: None
+ * Authentication: Bearer token (JWT)
  * @name GET /entries
  */
 app.get('/entries', passport.authenticate('jwt', { session: false }), async (req, res) => {
