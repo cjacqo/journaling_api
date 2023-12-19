@@ -91,8 +91,7 @@ app.get('/users', async (req, res) => {
  *  "Entries": [ObjectID]
  * }
  */
-app.post(
-  '/users',
+app.post('/users',
   [
     check("UserName", "Username is required").isLength({ min: 5 }),
     check(
@@ -158,8 +157,7 @@ app.post(
  *  "Entries": [ObjectID]
  * }
  */
-app.get(
-  '/users/:UserName',
+app.get('/users/:UserName',
   [
     check("UserName", "Username is required").isLength({ min: 5 }),
     check(
@@ -207,8 +205,7 @@ app.get(
  *  "Entries": [ObjectID]
  * }
  */
-app.put(
-  '/users/:UserName',
+app.put('/users/:UserName',
   [
     check("UserName", "Username is required").isLength({ min: 5 }),
     check(
@@ -272,8 +269,7 @@ app.put(
  * Response data format:
  * none
  */
-app.delete(
-  '/users/:UserName',
+app.delete('/users/:UserName',
   [
     check("UserName", "Username is required").isLength({ min: 5 }),
     check(
@@ -308,8 +304,7 @@ app.delete(
  * Authentication: Bearer token (JWT)
  * @name GET /entries
  */
-app.get(
-  '/entries',
+app.get('/entries',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     try {
@@ -338,8 +333,7 @@ app.get(
  * Authentication: Bearer token (JWT)
  * @name POST /entries
  */
-app.post(
-  '/entries',
+app.post('/entries',
   [
     check("Title", "Title is required").isLength({ min: 5 }),
     check(
@@ -406,8 +400,7 @@ app.post(
  * Authentication: Bearer token (JWT)
  * @name PUT /entries/:Title
  */
-app.put(
-  '/entries/:Title',
+app.put('/entries/:Title',
   [
     check("Title", "Title is required").isLength({ min: 5 }),
     check(
