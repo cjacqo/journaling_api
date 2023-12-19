@@ -56,7 +56,7 @@ app.get('/', (req, res) => {
  */
 app.post('/users', async (req, res) => {
   // Hash the new user's password
-  let hashedPassword = Users.hashedPassword(req.body.Password)
+  let hashedPassword = Users.hashPassword(req.body.Password)
   await Users.findOne({ UserName: req.body.UserName })
     .then((user) => {
       if (user) {
