@@ -15,6 +15,11 @@ app.use(morgan('common'))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 
+let auth = require('./auth')(app)
+
+const passport = require('passport')
+require('./passport.js')
+
 const cors = require('cors')
 let allowedOrigins = [
   'https://localhost:8080'
