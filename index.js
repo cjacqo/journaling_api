@@ -387,13 +387,23 @@ app.delete('/entries/:Title',
     try {
       // Get user id
       const userId = req.user._id
+      
+      // Get the user
+      const user = await Users.findById(userId)
+        .populate('Entries')
+        .then(user => {
+          if (!user) {
+            return res.status(404).send('User not found')
+          }
+          return user
+        })
 
-      // Find entry in Entries collection
-      const entry = await Entries.findOne({ Title: Title })
+      // Find entry with given title in User.Entries
+      const entry = user.Entries.find(entry => entry.Title === Title)
 
       // Check if entry exists
       if (!entry) {
-        return res.status(400).send('Entry with title \'' + Title + '\' was not found')
+        return res.status(400).send(`Entry with title '${Title}' was not found`)
       }
 
       // Get entry id
