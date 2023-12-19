@@ -210,6 +210,24 @@ app.put('/entries/:Title', async (req, res) => {
   })
 })
 
+/**
+ * DELETE ENTRY BY TITLE
+ */
+app.delete('/entries/:Title', async (req, res) => {
+  await Entries.findOneAndDelete({ Title: req.params.Title })
+    .then((entry) => {
+      if (!entry) {
+        res.status(400).send(req.params.Title + ' was not found')
+      } else {
+        res.status(200).send(req.params.Title + ' was deleted')
+      }
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error ' + err)
+    })
+})
+
 // list for requests
 app.listen(8080, () => {
   console.log('Your app is listening on port 8080')
