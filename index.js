@@ -313,31 +313,43 @@ app.post(
     const { Title, Content } = req.body
 
     try {
-      // Check to see if an entry with the same title exists
-      const entryExists = await Entries.findOne({ Title: Title })
-      if (entryExists) {
-        return res.status(400).send(Title + ' already exists')
-      }
-      
       // Get user id
       const userId = req.user._id
 
-      // Create new entry
-      const newEntry = new Entries({
-        Title,
-        Content,
-        Author: userId
-      })
+      // Get the user
+      const user = await Users.findById(userId)
+        .populate('Entries')
+        .then(user => {
+          if (!user) {
+            return res.status(404).send('User not found')
+          }
+          return user
+        })
 
-      // Save the entry
-      await newEntry.save()
+      // Filter User.Entries to see if Title already exists
+      const hasDuplicateTitle = user.Entries.some(entry => entry.Title === Title)
+      
+      // Check if Title already exists
+      if (hasDuplicateTitle) {
+        return res.status(400).send(`'${Title}' already exists`)
+      } else {
+        // Create new entry
+        const newEntry = new Entries({
+          Title,
+          Content,
+          Author: userId
+        })
 
-      // Update the user's Entries field with the new entry's ObjectID
-      await Users.findByIdAndUpdate(userId, {
-        $push: { Entries: newEntry._id }
-      })
+        // Save the entry
+        await newEntry.save()
 
-      return res.status(201).json(newEntry)
+        // Update the user's Entries field with the new entry's ObjectID
+        await Users.findByIdAndUpdate(userId, {
+          $push: { Entries: newEntry._id }
+        })
+
+        return res.status(201).json(newEntry)
+      }
     } catch (err) {
       console.error(err)
       res.status(500).send('Error: ' + err)
@@ -345,24 +357,35 @@ app.post(
 })
 
 /**
- * UPDATE ENTRY BY TITLE
+ * @description Update an Entry
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @name PUT /entries/:Title
  */
-app.put('/entries/:Title', async (req, res) => {
-  await Entries.findOneAndUpdate({ Title: req.params.Title }, { $set:
-    {
-      CreatedAt: new Date(),
-      Title: req.body.Title,
-      Content: req.body.Content
+app.put('/entries/:Title',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      // Check if a title already exists for 
+    } catch (err) {
+
     }
-  },
-  { new: true })
-  .then((updateEntry) => {
-    res.json(updateEntry)
-  })
-  .catch((err) => {
-    console.error(err)
-    res.status(500).send('Error: ' + err)
-  })
+    
+    // await Entries.findOneAndUpdate({ Title: req.params.Title }, { $set:
+    //   {
+    //     CreatedAt: new Date(),
+    //     Title: req.body.Title,
+    //     Content: req.body.Content
+    //   }
+    // },
+    // { new: true })
+    // .then((updateEntry) => {
+    //   res.json(updateEntry)
+    // })
+    // .catch((err) => {
+    //   console.error(err)
+    //   res.status(500).send('Error: ' + err)
+    // })
 })
 
 /**
