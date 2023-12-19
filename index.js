@@ -183,7 +183,17 @@ app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
 /**
  * GET ALL ENTRIES
  */
-app.get('/entries', async (req, res) => {
+// app.get('/entries', async (req, res) => {
+//   await Entries.find()
+//     .then((entries) => {
+//       res.status(201).json(entries)
+//     })
+//     .catch((err) => {
+//       console.error(err)
+//       res.status(500).send('Error: ' + err)
+//     })
+// })
+app.get('/entries', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Entries.find()
     .then((entries) => {
       res.status(201).json(entries)
