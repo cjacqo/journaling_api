@@ -370,22 +370,6 @@ app.put('/entries/:Title',
     } catch (err) {
 
     }
-    
-    // await Entries.findOneAndUpdate({ Title: req.params.Title }, { $set:
-    //   {
-    //     CreatedAt: new Date(),
-    //     Title: req.body.Title,
-    //     Content: req.body.Content
-    //   }
-    // },
-    // { new: true })
-    // .then((updateEntry) => {
-    //   res.json(updateEntry)
-    // })
-    // .catch((err) => {
-    //   console.error(err)
-    //   res.status(500).send('Error: ' + err)
-    // })
 })
 
 /**
