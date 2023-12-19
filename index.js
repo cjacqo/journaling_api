@@ -55,6 +55,8 @@ app.get('/', (req, res) => {
  * }
  */
 app.post('/users', async (req, res) => {
+  // Hash the new user's password
+  let hashedPassword = Users.hashedPassword(req.body.Password)
   await Users.findOne({ UserName: req.body.UserName })
     .then((user) => {
       if (user) {
@@ -64,7 +66,7 @@ app.post('/users', async (req, res) => {
           FirstName: req.body.FirstName,
           LastName: req.body.LastName,
           UserName: req.body.UserName,
-          Password: req.body.Password,
+          Password: hashedPassword,
           Email: req.body.Email
         })
         .then((user) => { res.status(201).json(user) })
