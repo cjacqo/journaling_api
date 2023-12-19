@@ -271,37 +271,6 @@ app.delete(
 })
 
 /**
- * @description Insert Entry into Users List of Entries by UserName
- * @name POST /users/:UserName/Entries/:EntryID
- * @example
- * Authentication: Bearer token (JWT)
- * @example
- * Request data format:
- * {
- *  "UserName": String
- * }
- * @example
- * Response data format:
- * none
- */
-app.post(
-  '/users/:UserName/Entries/:EntryID',
-  passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
-    await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
-      $push: { Entries: req.params.EntryID }
-    },
-    { new: true })
-    .then((updatedUser) => {
-      res.json(updatedUser)
-    })
-    .catch((err) => {
-      console.error(err)
-      res.status(500).send('Error: ' + err)
-    })
-})
-
-/**
  * @description List of Entries
  * @example
  * Authentication: Bearer token (JWT)
@@ -311,14 +280,24 @@ app.get(
   '/entries',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
-    await Entries.find()
-      .then((entries) => {
-        res.status(201).json(entries)
+    try {
+      // Get the user id
+      const userId = req.user._id
+      
+      // Get the user
+      const user = await Users.findById(userId)
+
+      // Find the entries based on ObjectID
+      const entries = await Entries.find({
+        _id: { $in: user.Entries }
       })
-      .catch((err) => {
-        console.error(err)
-        res.status(500).send('Error: ' + err)
-      })
+
+      // Return the entries
+      return res.status(200).json(entries)
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    }
 })
 
 /**
