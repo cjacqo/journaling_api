@@ -37,21 +37,58 @@ app.use(cors({
   }
 }))
 
+const { check, validationResult } = require('express-validator') 
+
+/**
+ * @description Home Page
+ * @example
+ * Authentication: None
+ * @name GET /
+ */
 app.get('/', (req, res) => {
   res.send('Welcome to my API for journaling!')
 })
 
 /**
- * ADD A USER
- * - Expected JSON Format:
+ * @description List of Users
+ * @example
+ * Authentication: None
+ * @name GET /users
+ */
+app.get('/users', async (req, res) => {
+  await Users.find()
+    .then((users) => {
+      res.status(201).json(users)
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+})
+
+/**
+ * @description Create a User
+ * @name POST /users
+ * @example
+ * Authentication: None
+ * @example
+ * Request data format
  * {
- *    ID: Integer,
- *    FirstName: String,
- *    LastName: String,
- *    UserName: String,
- *    Password: String,
- *    Email: String,
- *    Entries: Array
+ *  "FirstName": String,
+ *  "LastName": String,
+ *  "UserName": String,
+ *  "Password": String,
+ *  "Email": String
+ * }
+ * @example
+ * Response data format
+ * {
+ *  "FirstName": String,
+ *  "LastName": String,
+ *  "UserName": String,
+ *  "Password": String,
+ *  "Email": String,
+ *  "Entries": [ObjectID]
  * }
  */
 app.post('/users', async (req, res) => {
@@ -83,21 +120,26 @@ app.post('/users', async (req, res) => {
 })
 
 /**
- * GET ALL USERS
- */
-app.get('/users', async (req, res) => {
-  await Users.find()
-    .then((users) => {
-      res.status(201).json(users)
-    })
-    .catch((err) => {
-      console.error(err)
-      res.status(500).send('Error: ' + err)
-    })
-})
-
-/**
- * GET A USER BY USERNAME
+ * @description Get a User by UserName
+ * @name GET /users/:UserName
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @example
+ * Request data format
+ * {
+ *  "UserName": String
+ * }
+ * @example
+ * Response data format
+ * {
+ *  "_id": ObjectID,
+ *  "FirstName": String,
+ *  "LastName": String,
+ *  "UserName": String,
+ *  "Password": String,
+ *  "Email": String,
+ *  "Entries": [ObjectID]
+ * }
  */
 app.get('/users/:UserName', async (req, res) => {
   await Users.findOne({ UserName: req.params.UserName })
@@ -115,16 +157,27 @@ app.get('/users/:UserName', async (req, res) => {
 })
 
 /**
- * UPDATE USER INFO BY USERNAME
- * - Expected JSON Format:
+ * @description Update a User
+ * @name PUT /users/:UserName
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @example
+ * Request data format
  * {
- *    ID: Integer,
- *    FirstName: String,
- *    LastName: String,
- *    UserName: String,
- *    Password: String,
- *    Email: String,
- *    Entries: Array
+ *  "UserName": String,
+ *  "Password": String,
+ *  "Email": String
+ * }
+ * @example
+ * Response data format
+ * {
+ *  "_id": ObjectID,
+ *  "FirstName": String,
+ *  "LastName": String,
+ *  "UserName": String,
+ *  "Password": String,
+ *  "Email": String,
+ *  "Entries": [ObjectID]
  * }
  */
 app.put('/users/:UserName', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -163,7 +216,18 @@ app.put('/users/:UserName', passport.authenticate('jwt', { session: false }), as
 })
 
 /**
- * DELETE A USER BY USERNAME
+ * @description Delete a User by UserName
+ * @name DELETE /users/:UserName
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @example
+ * Request data format:
+ * {
+ *  "UserName": String
+ * }
+ * @example
+ * Response data format:
+ * none
  */
 app.delete('/users/:UserName', async (req, res) => {
   await Users.findOneAndDelete({ UserName: req.params.UserName })
@@ -181,7 +245,18 @@ app.delete('/users/:UserName', async (req, res) => {
 })
 
 /**
- * ADD ENTRY TO A USER'S LIST OF ENTRIES
+ * @description Insert Entry into Users List of Entries by UserName
+ * @name POST /users/:UserName/Entries/:EntryID
+ * @example
+ * Authentication: Bearer token (JWT)
+ * @example
+ * Request data format:
+ * {
+ *  "UserName": String
+ * }
+ * @example
+ * Response data format:
+ * none
  */
 app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
   await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
@@ -198,7 +273,10 @@ app.post('/users/:UserName/Entries/:EntryID', async (req, res) => {
 })
 
 /**
- * GET ALL ENTRIES
+ * @description List of Entries
+ * @example
+ * Authentication: None
+ * @name GET /entries
  */
 app.get('/entries', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Entries.find()
