@@ -160,6 +160,13 @@ app.post(
  */
 app.get(
   '/users/:UserName',
+  [
+    check("UserName", "Username is required").isLength({ min: 5 }),
+    check(
+      "UserName",
+      "Username contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     await Users.findOne({ UserName: req.params.UserName })
@@ -202,6 +209,19 @@ app.get(
  */
 app.put(
   '/users/:UserName',
+  [
+    check("UserName", "Username is required").isLength({ min: 5 }),
+    check(
+      "UserName",
+      "Username contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+    check("Password", "Password must be between 8 and 20 characters").isLength({
+      min: 8,
+      max: 20
+    }),
+    check("Password", "Password is required").not().isEmpty(),
+    check("Email", "Email does not appear to be valid").isEmail()
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     // CONDITION TO CHECK USER.USERNAME !== PARAMS.USERNAME
@@ -254,6 +274,13 @@ app.put(
  */
 app.delete(
   '/users/:UserName',
+  [
+    check("UserName", "Username is required").isLength({ min: 5 }),
+    check(
+      "UserName",
+      "Username contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     try {
@@ -313,6 +340,18 @@ app.get(
  */
 app.post(
   '/entries',
+  [
+    check("Title", "Title is required").isLength({ min: 5 }),
+    check(
+      "Title",
+      "Title contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+    check("Content", "Content must be between 8 and 500 characters").isLength({
+      min: 8,
+      max: 500
+    }),
+    check("Content", "Content is required").not().isEmpty()
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     const { Title, Content } = req.body
@@ -367,7 +406,20 @@ app.post(
  * Authentication: Bearer token (JWT)
  * @name PUT /entries/:Title
  */
-app.put('/entries/:Title',
+app.put(
+  '/entries/:Title',
+  [
+    check("Title", "Title is required").isLength({ min: 5 }),
+    check(
+      "Title",
+      "Title contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+    check("Content", "Content must be between 8 and 500 characters").isLength({
+      min: 8,
+      max: 500
+    }),
+    check("Content", "Content is required").not().isEmpty()
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     // Get title from params
@@ -432,6 +484,13 @@ app.put('/entries/:Title',
  * @name DELETE /entries/:Title
  */
 app.delete('/entries/:Title',
+  [
+    check("Title", "Title is required").isLength({ min: 5 }),
+    check(
+      "Title",
+      "Title contains non alphanumberic characters - not allowed"
+    ).isAlphanumeric(),
+  ],
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     // Get title from params
