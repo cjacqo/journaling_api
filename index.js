@@ -132,22 +132,34 @@ app.put('/users/:UserName', passport.authenticate('jwt', { session: false }), as
   if (req.user.UserName !== req.params.UserName) {
     return res.status(400).send('Permission denied')
   }
-  await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
-    $set:
-    {
-      UserName: req.body.UserName,
-      Password: req.body.Password,
-      Email: req.body.Email
+  try {
+    // Check if the new username already exists in the db
+    const existinguser = await Users.findOne({ UserName: req.body.UserName })
+
+    if (existinguser) {
+      return res.status(400).send(req.body.UserName + ' already exists')
     }
-  },
-  { new: true }) // This line makes sure that the updated document is returned
-  .then((updatedUser) => {
-    res.json(updatedUser)
-  })
-  .catch((err) => {
+
+    await Users.findOneAndUpdate({ UserName: req.params.UserName }, {
+      $set:
+      {
+        UserName: req.body.UserName,
+        Password: req.body.Password,
+        Email: req.body.Email
+      }
+    },
+    { new: true })
+    .then((updatedUser) => {
+      res.json(updatedUser)
+    })
+    .catch((err) => {
+      console.error(err)
+      res.status(500).send('Error: ' + err)
+    })
+  } catch (err) {
     console.error(err)
     res.status(500).send('Error: ' + err)
-  })
+  }
 })
 
 /**
