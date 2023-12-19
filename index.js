@@ -3,7 +3,7 @@ const Models = require('./models.js')
 const Entries = Models.Entry
 const Users = Models.User
 
-mongoose.connect('mongodb://127.0.0.1/journaling', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://127.0.0.1/journaling')
 
 const express = require('express'),
 app = express(),
@@ -187,6 +187,27 @@ app.get('/entries', async (req, res) => {
       console.error(err)
       res.status(500).send('Error: ' + err)
     })
+})
+
+/**
+ * UPDATE ENTRY BY TITLE
+ */
+app.put('/entries/:Title', async (req, res) => {
+  await Entries.findOneAndUpdate({ Title: req.params.Title }, { $set:
+    {
+      CreatedAt: new Date(),
+      Title: req.body.Title,
+      Content: req.body.Content
+    }
+  },
+  { new: true })
+  .then((updateEntry) => {
+    res.json(updateEntry)
+  })
+  .catch((err) => {
+    console.error(err)
+    res.status(500).send('Error: ' + err)
+  })
 })
 
 // list for requests
