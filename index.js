@@ -365,10 +365,58 @@ app.post(
 app.put('/entries/:Title',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
+    // Get title from params
+    const { Title } = req.params
+    
     try {
-      // Check if a title already exists for 
-    } catch (err) {
+      // Get user id
+      const userId = req.user._id
 
+      // Get the user and populate Entries
+      const user = await Users.findById(userId)
+        .populate('Entries')
+        .then(user => {
+          if (!user) {
+            return res.status(404).send('User not found')
+          }
+          return user
+        })
+      
+      // Find the entry with the same title
+      const entry = user.Entries.find(entry => entry.Title === Title)
+
+      // Check if entry exists
+      if (!entry) {
+        return res.status(400).send(`Entry with title '${Title}' was not found`)
+      }
+
+      // Filter User.Entries to see if Title already exists
+      const hasDuplicateTitle = user.Entries.some(entry => entry.Title === req.body.Title)
+      
+      // Check if Title already exists
+      if (hasDuplicateTitle) {
+        return res.status(400).send(`'${req.body.Title}' already exists`)
+      }
+
+      // Find entry in Entries collection
+      await Entries.findOneAndUpdate({ Title: Title, Author: userId }, {
+        $set:
+        {
+          Title: req.body.Title,
+          Content: req.body.Content
+        }
+      },
+      { new: true })
+      .then((updatedEntry) => {
+        res.json(updatedEntry)
+      })
+      .catch((err) => {
+        console.error(err)
+        res.status(500).send('Error: ' + err)
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(400).send('Error: ' + err)
     }
 })
 
