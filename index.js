@@ -536,7 +536,12 @@ app.delete('/entries/:Title',
     }
 })
 
-// list for requests
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080')
+// listen for requests
+const port = process.env.PORT || 8080
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Listening on Port: ${port}`)
 })
+
+// app.listen(8080, () => {
+//   console.log('Your app is listening on port 8080')
+// })
