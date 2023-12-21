@@ -26,7 +26,8 @@ require('./passport.js')
 
 const cors = require('cors')
 let allowedOrigins = [
-  'https://localhost:8080'
+  'https://localhost:8080',
+  'https://localhost:5173'
 ]
 
 app.use(cors({
