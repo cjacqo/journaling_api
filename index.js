@@ -442,7 +442,7 @@ app.put('/entries/:Id',
         console.log(entry._id)
         console.log(entryId)
       })
-      const entry = user.Entries.find(entry => entry._id === entryId)
+      const entry = user.Entries.find(entry => entry._id == entryId)
 
       console.log(entry + ' Line 442')
 
