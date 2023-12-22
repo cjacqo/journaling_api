@@ -524,7 +524,7 @@ app.delete('/entries/:Id',
         console.error('Error deleting entry from User document: ' + err)
       })
 
-      return res.status(200).send(Title + ' was found and deleted')
+      return res.status(200).send('Entry was found and deleted')
       
     } catch (err) {
       console.error(err)
