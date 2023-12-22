@@ -444,8 +444,6 @@ app.put('/entries/:Id',
       })
       const entry = await Entries.findById(entryId)
 
-      console.log(entry + ' Line 442')
-
       // Check if entry exists
       if (!entry) {
         return res.status(400).send(`Entry with id '${Id}' was not found`)
@@ -477,7 +475,6 @@ app.put('/entries/:Id',
       })
     } catch (err) {
       console.error(err)
-      console.log(err + ' Line 475')
       res.status(400).send('Error: ' + err)
     }
 })
