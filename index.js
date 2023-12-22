@@ -439,6 +439,8 @@ app.put('/entries/:Id',
       // Find the entry with the same title
       const entry = user.Entries.find(entry => entry._id === Id)
 
+      console.log(entry + ' Line 442')
+
       // Check if entry exists
       if (!entry) {
         return res.status(400).send(`Entry with id '${Id}' was not found`)
@@ -470,6 +472,7 @@ app.put('/entries/:Id',
       })
     } catch (err) {
       console.error(err)
+      console.log(err + ' Line 475')
       res.status(400).send('Error: ' + err)
     }
 })
