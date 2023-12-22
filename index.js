@@ -436,12 +436,8 @@ app.put('/entries/:Id',
         //   return user
         // })
       
-      // Find the entry with the same title
+      // Find the entry with the same id
       const entryId = new mongoose.Types.ObjectId(Id)
-      user.Entries.filter(entry => {
-        console.log(entry._id)
-        console.log(entryId)
-      })
       const entry = await Entries.findById(entryId)
 
       // Check if entry exists
@@ -485,18 +481,11 @@ app.put('/entries/:Id',
  * Authentication: Bearer token (JWT)
  * @name DELETE /entries/:Title
  */
-app.delete('/entries/:Title',
-  [
-    check("Title", "Title is required").isLength({ min: 5 }),
-    check(
-      "Title",
-      "Title contains non alphanumberic characters - not allowed"
-    ).isAlphanumeric(),
-  ],
+app.delete('/entries/:Id',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     // Get title from params
-    const { Title } = req.params
+    const { Id } = req.params
     
     try {
       // Get user id
@@ -504,24 +493,22 @@ app.delete('/entries/:Title',
       
       // Get the user
       const user = await Users.findById(userId)
-        .populate('Entries')
-        .then(user => {
-          if (!user) {
-            return res.status(404).send('User not found')
-          }
-          return user
-        })
+        // .populate('Entries')
+        // .then(user => {
+        //   if (!user) {
+        //     return res.status(404).send('User not found')
+        //   }
+        //   return user
+        // })
 
-      // Find entry with given title in User.Entries
-      const entry = user.Entries.find(entry => entry.Title === Title)
+      // Find the entry with the same id
+      const entryId = new mongoose.Types.ObjectId(Id)
+      const entry = await Entries.findById(entryId)
 
       // Check if entry exists
       if (!entry) {
-        return res.status(400).send(`Entry with title '${Title}' was not found`)
+        return res.status(400).send(`Entry with id '${Id}' was not found`)
       }
-
-      // Get entry id
-      const entryId = entry._id
 
       // Delete from Entries collection
       await Entries.findByIdAndDelete(entryId)
