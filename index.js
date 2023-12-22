@@ -437,7 +437,8 @@ app.put('/entries/:Id',
         })
       
       // Find the entry with the same title
-      const entry = user.Entries.find(entry => entry._id === mongoose.Types.ObjectId(Id))
+      const entryId = new mongoose.Types.ObjectId(Id)
+      const entry = user.Entries.find(entry => entry._id === entryId)
 
       console.log(entry + ' Line 442')
 
