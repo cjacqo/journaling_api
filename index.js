@@ -428,13 +428,13 @@ app.put('/entries/:Id',
 
       // Get the user and populate Entries
       const user = await Users.findById(userId)
-        .populate('Entries')
-        .then(user => {
-          if (!user) {
-            return res.status(404).send('User not found')
-          }
-          return user
-        })
+        // .populate('Entries')
+        // .then(user => {
+        //   if (!user) {
+        //     return res.status(404).send('User not found')
+        //   }
+        //   return user
+        // })
       
       // Find the entry with the same title
       const entryId = new mongoose.Types.ObjectId(Id)
@@ -442,7 +442,7 @@ app.put('/entries/:Id',
         console.log(entry._id)
         console.log(entryId)
       })
-      const entry = user.Entries.find(entry => entry._id == entryId)
+      const entry = await Entries.findById(entryId)
 
       console.log(entry + ' Line 442')
 
