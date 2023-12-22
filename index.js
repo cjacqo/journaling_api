@@ -404,7 +404,7 @@ app.post('/entries',
  * Authentication: Bearer token (JWT)
  * @name PUT /entries/:Title
  */
-app.put('/entries/:Title',
+app.put('/entries/:Id',
   [
     check("Title", "Title is required").isLength({ min: 5 }),
     check(
@@ -420,7 +420,7 @@ app.put('/entries/:Title',
   passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     // Get title from params
-    const { Title } = req.params
+    const { Id } = req.params
     
     try {
       // Get user id
@@ -437,11 +437,11 @@ app.put('/entries/:Title',
         })
       
       // Find the entry with the same title
-      const entry = user.Entries.find(entry => entry.Title === Title)
+      const entry = user.Entries.find(entry => entry._id === Id)
 
       // Check if entry exists
       if (!entry) {
-        return res.status(400).send(`Entry with title '${Title}' was not found`)
+        return res.status(400).send(`Entry with id '${Id}' was not found`)
       }
 
       // Filter User.Entries to see if Title already exists
@@ -453,7 +453,7 @@ app.put('/entries/:Title',
       }
 
       // Find entry in Entries collection
-      await Entries.findOneAndUpdate({ Title: Title, Author: userId }, {
+      await Entries.findOneAndUpdate({ _id: Id, Author: userId }, {
         $set:
         {
           Title: req.body.Title,
